@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>CSGOStats.Services.Core</RootNamespace>
+    <AssemblyName>CSGOStats.Services.Core</AssemblyName>
+    <Version>0.1.0</Version>
+    <Authors />
+    <Company />
+    <Product />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSGOStats.Infrastructure.DataAccess" Version="0.2.0" />
+    <PackageReference Include="CSGOStats.Infrastructure.Messaging" Version="0.2.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Quartz" Version="3.0.7" />
+    <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+  </ItemGroup>
+
+</Project>
