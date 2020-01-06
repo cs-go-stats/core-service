@@ -24,38 +24,12 @@ namespace CSGOStats.Services.Core.Initialization
             _serviceName = serviceName.NotNull(nameof(serviceName));
             _configuration = configuration.NotNull(nameof(configuration));
             _serviceCollection = new ServiceCollection();
+            EnableLogging();
         }
 
         public StartupBuilder WithMessaging<TStartup>()
         {
             _serviceCollection.AddMessaging(_configuration).AddHandlers<TStartup>();
-            return this;
-        }
-
-        public StartupBuilder WithLogging()
-        {
-            _serviceCollection.AddLogging(builder =>
-            {
-                var setting = _configuration.GetFromConfiguration(
-                    sectionName: "Logging",
-                    creatingFunctor: configurationSection => new LogSetting(
-                        messageTemplate: configurationSection["MessageTemplate"],
-                        minimumLevel: configurationSection["MinimumLevel"].Int()));
-                builder
-                    .AddSerilog(
-                        new LoggerConfiguration()
-                            .Enrich.FromLogContext()
-                            .MinimumLevel.Is(setting.MinimumLevel)
-                            .WriteTo.File(
-                                path: $"{_serviceName}.log",
-                                restrictedToMinimumLevel: setting.MinimumLevel,
-                                outputTemplate: setting.MessageTemplate)
-                            .WriteTo.Console(
-                                restrictedToMinimumLevel: setting.MinimumLevel,
-                                outputTemplate: setting.MessageTemplate)
-                            .CreateLogger());
-            });
-
             return this;
         }
 
@@ -87,12 +61,35 @@ namespace CSGOStats.Services.Core.Initialization
         }
 
         public Task RunAsync(
-            Func<IServiceProvider, Task> actionBeforeStart = null, 
+            Func<IServiceProvider, Task> actionBeforeStart = null,
             Func<IServiceProvider, Task> actionBeforeFinish = null) =>
                 new Runtime(
                     _serviceCollection.BuildServiceProvider(),
                     _configuration,
                     actionBeforeStart,
                     actionBeforeFinish).RunAsync();
+
+        private void EnableLogging() =>
+            _serviceCollection.AddLogging(builder =>
+            {
+                var setting = _configuration.GetFromConfiguration(
+                    sectionName: "Logging",
+                    creatingFunctor: configurationSection => new LogSetting(
+                        messageTemplate: configurationSection["MessageTemplate"],
+                        minimumLevel: configurationSection["MinimumLevel"].Int()));
+                builder
+                    .AddSerilog(
+                        new LoggerConfiguration()
+                            .Enrich.FromLogContext()
+                            .MinimumLevel.Is(setting.MinimumLevel)
+                            .WriteTo.File(
+                                path: $"{_serviceName}.log",
+                                restrictedToMinimumLevel: setting.MinimumLevel,
+                                outputTemplate: setting.MessageTemplate)
+                            .WriteTo.Console(
+                                restrictedToMinimumLevel: setting.MinimumLevel,
+                                outputTemplate: setting.MessageTemplate)
+                            .CreateLogger());
+            });
     }
 }

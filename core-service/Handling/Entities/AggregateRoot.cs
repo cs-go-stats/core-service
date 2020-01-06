@@ -14,7 +14,7 @@ namespace CSGOStats.Services.Core.Handling.Entities
 
         protected AggregateRoot(Guid id, long version)
         {
-            Id = id.AnythingBut(Guid.Empty, nameof(id));
+            Id = id;
             Version = version.Positive(nameof(version));
         }
 

@@ -8,6 +8,6 @@ namespace CSGOStats.Services.Core.Data
     {
         public static EntityTypeBuilder<TEntity> RegisterTable<TEntity>(this EntityTypeBuilder<TEntity> builder, string schema)
             where TEntity : class, IEntity =>
-                builder.ToTable(nameof(TEntity), schema);
+                builder.ToTable(typeof(TEntity).Name, schema);
     }
 }

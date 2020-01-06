@@ -60,6 +60,7 @@ namespace CSGOStats.Services.Core.Initialization
 
             var setup = _serviceProvider.GetService<Func<IScheduler, IServiceProvider, IConfigurationRoot, Task>>();
             await setup(scheduler, _serviceProvider, _configuration);
+            await scheduler.Start();
         }
 
         private Task TryStopSchedulerAsync() =>
