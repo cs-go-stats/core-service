@@ -21,7 +21,16 @@ namespace CSGOStats.Services.Core.Handling.Storage
 
         public virtual async Task<TEntity> Async(TKey key, Action<TEntity> updater)
         {
-            var entity = await _repository.FindAsync(key) ?? _factory.CreateEmpty(key);
+            var entity = await _repository.FindAsync(key);
+            if (entity == null)
+            {
+                entity = _factory.CreateEmpty(key);
+                updater(entity);
+
+                await _repository.AddAsync(key, entity);
+
+                return entity;
+            }
 
             updater(entity);
 

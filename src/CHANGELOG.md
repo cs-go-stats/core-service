@@ -1,3 +1,7 @@
+# v0.1.2
+## Changed
+* Fixed a bug in Upsert that called Update for new entity that has not been presented in database.
+
 # v0.1.1
 ## Changed
 * Fixed a bug when scheduler didn't start after service initialize.
