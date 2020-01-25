@@ -1,2 +1,4 @@
-./core-service/bin/
-./core-service/obj/
+./core/bin/
+./core/obj/
+./core-tests/bin/
+./core-tests/obj/

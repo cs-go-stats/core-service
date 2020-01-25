@@ -1,6 +1,6 @@
 category=infrastructure
-service=core-service
-version=0.1.2
+service=core
+version=0.2.0
 
 cd ./../../automation_scripts
 

@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  mongodb:
+    image: mongo:4.2.2-bionic
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=dotFive1
+    container_name: mongodb
+    networks:
+      - prime
+  postgres:
+    image: postgres:12.1-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=dotFive1
+    container_name: postgres
+    networks:
+      - prime
+  rabbitmq:
+    image: rabbitmq:3.8.2-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    container_name: rabbitmq
+    networks:
+      - prime
+
+networks:
+  prime:
+    driver: bridge

@@ -1,3 +1,9 @@
+# v0.2.0
+## Added
+* Code from Infrastructure.DataAccess, Infrastructure.Messaging and Infrastructure.PageParse packages.
+## Changed
+* Ordered code in correct namespaces.
+
 # v0.1.4
 # v0.1.3
 ## Changed
@@ -19,8 +25,3 @@
 * Links extensions
 * Scheduling extensions and abstractions.
 * Handling and core entities abstractions.
-
-# vTemplate
-## Added
-## Changed
-## Removed
