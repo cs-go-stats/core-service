@@ -1,4 +1,6 @@
-﻿using NodaTime;
+﻿using System;
+using NodaTime;
+using NodaTime.Extensions;
 
 namespace CSGOStats.Infrastructure.Core.Extensions
 {
@@ -10,5 +12,9 @@ namespace CSGOStats.Infrastructure.Core.Extensions
 
         public static OffsetDateTime FromUnixTimestamp(this long x) =>
             Instant.FromUnixTimeMilliseconds(x).WithOffset(Offset.Zero);
+
+        public static OffsetDateTime GetCurrentDate => new OffsetDateTime(
+            localDateTime: DateTime.UtcNow.ToLocalDateTime(),
+            offset: Offset.Zero);
     }
 }

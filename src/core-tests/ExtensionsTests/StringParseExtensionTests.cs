@@ -87,5 +87,35 @@ namespace CSGOStats.Infrastructure.Core.Tests.ExtensionsTests
                 Record.Exception(() => CorrectNumericValue.Bool()).Should().BeOfType<FormatException>();
             }
         }
+
+        [Fact]
+        public void TimespanParseTests()
+        {
+            {
+                var value = DateTime.Now.TimeOfDay;
+                var parsed = value.ToString().Timespan();
+                parsed.Should().Be(value);
+            }
+
+            {
+                var day = Random.Next(10);
+                var hour = Random.Next(24);
+                var minute = Random.Next(60);
+                var second = Random.Next(60);
+                var millisecond = Random.Next(1000);
+                var value = $"{day}.{hour}:{minute}:{second}.{millisecond}";
+                var parsed = value.Timespan();
+                parsed.Should().Be(new TimeSpan(day, hour, minute, second, millisecond));
+            }
+
+            {
+                var parsed = CorrectNumericValue.Timespan();
+                parsed.Days.Should().Be(CorrectNumericValue.Int());
+            }
+
+            {
+                Record.Exception(() => WrongNumericValue.Timespan()).Should().BeOfType<FormatException>();
+            }
+        }
     }
 }

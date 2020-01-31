@@ -6,7 +6,7 @@ namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo
 {
     public class BaseMongoContext
     {
-        protected readonly IMongoClient Client;
+        public IMongoClient Client { get; }
 
         public IMongoDatabase Database { get; }
 

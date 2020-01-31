@@ -1,5 +1,5 @@
 ﻿using CSGOStats.Infrastructure.Core.Extensions;
-using CSGOStats.Infrastructure.Core.Tests.Infrastructure.Model.DerivedTypes;
+using CSGOStats.Infrastructure.Core.Tests.ExtensionsTests.Instances.DerivedTypes;
 using FluentAssertions;
 using Xunit;
 

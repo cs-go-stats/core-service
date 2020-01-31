@@ -33,7 +33,7 @@ namespace CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline.Standard
         public Task OnCompleteAwait(object rawMessage)
         {
             var stopwatch = StopTimer(rawMessage);
-            _logger.LogInformation($"Finished handling of message of type '{rawMessage.GetType()}' in '{stopwatch.Elapsed}'.");
+            _logger.LogDebug($"Finished handling of message of type '{rawMessage.GetType()}' in '{stopwatch.Elapsed}'.");
             return Task.CompletedTask;
         }
 

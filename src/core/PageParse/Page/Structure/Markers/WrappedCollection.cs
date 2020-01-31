@@ -13,6 +13,8 @@ namespace CSGOStats.Infrastructure.Core.PageParse.Page.Structure.Markers
     {
         private readonly List<T> _innerCollection = new List<T>();
 
+        public int Length => _innerCollection.Count;
+
         public override void Add(object instance) => _innerCollection.Add(instance.OfType<T>());
 
         public IEnumerator<T> GetEnumerator() => _innerCollection.GetEnumerator();

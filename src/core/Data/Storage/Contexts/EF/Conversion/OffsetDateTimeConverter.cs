@@ -4,7 +4,7 @@ using NodaTime;
 
 namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF.Conversion
 {
-    public class OffsetDateTimeConverter : ValueConverter<OffsetDateTime, string>
+    internal class OffsetDateTimeConverter : ValueConverter<OffsetDateTime, string>
     {
         public OffsetDateTimeConverter()
             : base(

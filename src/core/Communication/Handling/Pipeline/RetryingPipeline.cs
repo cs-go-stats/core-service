@@ -6,7 +6,7 @@ using CSGOStats.Infrastructure.Core.Validation;
 
 namespace CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline
 {
-    public class RetryingPipeline : Pipeline
+    internal class RetryingPipeline : Pipeline
     {
         private readonly RetrySetting _retrySetting;
 

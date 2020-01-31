@@ -8,6 +8,16 @@ namespace CSGOStats.Infrastructure.Core.Extensions
 {
     public static class MongoMappingExtensions
     {
+        public static void TryRegisterClassMap<T>(Action<BsonClassMap<T>> mappingAction)
+        {
+            if (BsonClassMap.IsClassMapRegistered(typeof(T)))
+            {
+                return;
+            }
+
+            BsonClassMap.RegisterClassMap(mappingAction);
+        }
+
         public static BsonMemberMap MapGuid<T>(
             this BsonClassMap<T> mapper, 
             Expression<Func<T, Guid>> guidPropertyExpression,

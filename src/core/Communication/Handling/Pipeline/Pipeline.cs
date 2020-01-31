@@ -6,7 +6,7 @@ using CSGOStats.Infrastructure.Core.Validation;
 
 namespace CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline
 {
-    public class Pipeline : IPipeline
+    internal class Pipeline : IPipeline
     {
         private readonly IReadOnlyCollection<IPipe> _pipes;
 

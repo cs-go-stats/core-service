@@ -1,4 +1,6 @@
-﻿namespace CSGOStats.Infrastructure.Core.Extensions
+﻿using System;
+
+namespace CSGOStats.Infrastructure.Core.Extensions
 {
     public static class StringParseExtensions
     {
@@ -13,5 +15,8 @@
 
         public static bool Bool(this string x) =>
             bool.Parse(x);
+
+        public static TimeSpan Timespan(this string x) =>
+            TimeSpan.Parse(x);
     }
 }

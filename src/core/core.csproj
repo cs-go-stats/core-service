@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>CSGOStats.Infrastructure.Core</RootNamespace>
     <AssemblyName>CSGOStats.Infrastructure.Core</AssemblyName>
-    <Version>0.2.0-alpha-3</Version>
+    <Version>0.2.0-alpha-8</Version>
     <Authors />
     <Company />
     <Product />

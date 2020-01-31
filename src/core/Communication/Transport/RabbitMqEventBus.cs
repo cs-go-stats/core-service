@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CSGOStats.Infrastructure.Core.Communication.Config;
 using CSGOStats.Infrastructure.Core.Communication.Handling;
 using CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline;
+using CSGOStats.Infrastructure.Core.Communication.Queues;
+using CSGOStats.Infrastructure.Core.Context;
 using CSGOStats.Infrastructure.Core.Extensions;
 using CSGOStats.Infrastructure.Core.Validation;
 using EasyNetQ;
@@ -56,13 +58,23 @@ namespace CSGOStats.Infrastructure.Core.Communication.Transport
                 return;
             }
 
-            await CreatePipeline(_serviceProvider).RunAsync(messageHandlers, rawMessage);
+            await CreatePipeline(scope.ServiceProvider).RunAsync(messageHandlers, rawMessage);
+        }
+
+        private void SubscriptionConfiguration(ISubscriptionConfiguration configuration, Type messageType)
+        {
+            var queueName = GetQueueName(messageType);
+            var queue = _bus.Advanced.QueueDeclare(queueName);
+
+            if (messageType.GetAttribute<AutopurgeQueueAttribute>() != null)
+            {
+                _bus.Advanced.QueuePurge(queue);
+            }
+
+            configuration.WithQueueName(queue.Name);
         }
 
         private static string GetQueueName(Type type) => type.Assembly.GetName().Name;
-
-        private static void SubscriptionConfiguration(ISubscriptionConfiguration configuration, Type messageType) =>
-            configuration.WithQueueName(GetQueueName(messageType));
 
         private static IReadOnlyCollection<IMessageHandler> FindCorrespondingHandlers(object message, IServiceProvider serviceProvider) =>
             serviceProvider
@@ -71,9 +83,12 @@ namespace CSGOStats.Infrastructure.Core.Communication.Transport
                 .Where(x => x.HandlingType == message.NotNull(nameof(message)).GetType())
                 .ToArrayFast();
 
-        private static IPipeline CreatePipeline(IServiceProvider serviceProvider) =>
-            new RetryingPipeline(
+        private static IPipeline CreatePipeline(IServiceProvider serviceProvider)
+        {
+            serviceProvider.InitializeInScope();
+            return new RetryingPipeline(
                 pipes: serviceProvider.GetServices<IPipe>(),
                 retrySetting: serviceProvider.GetService<RetrySetting>());
+        }
     }
 }

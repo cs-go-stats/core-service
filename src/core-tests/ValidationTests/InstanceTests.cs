@@ -1,5 +1,5 @@
 ﻿using System;
-using CSGOStats.Infrastructure.Core.Tests.Infrastructure.Model.HaveInterfaceTypes;
+using CSGOStats.Infrastructure.Core.Tests.ExtensionsTests.Instances.HaveInterfaceTypes;
 using CSGOStats.Infrastructure.Core.Validation;
 using FluentAssertions;
 using Xunit;

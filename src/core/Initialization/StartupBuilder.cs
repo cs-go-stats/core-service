@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CSGOStats.Infrastructure.Core.Context;
+using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF;
+using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo;
 using CSGOStats.Infrastructure.Core.Extensions;
+using CSGOStats.Infrastructure.Core.Initialization.RT;
+using CSGOStats.Infrastructure.Core.Initialization.RT.Actions;
 using CSGOStats.Infrastructure.Core.Initialization.Settings;
 using CSGOStats.Infrastructure.Core.Validation;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +27,7 @@ namespace CSGOStats.Infrastructure.Core.Initialization
             _serviceName = serviceName.NotNull(nameof(serviceName));
             _configuration = configuration.NotNull(nameof(configuration));
             _serviceCollection = new ServiceCollection();
-            EnableLogging();
+            SetupServices();
         }
 
         public StartupBuilder WithMessaging<TStartup>()
@@ -31,15 +36,21 @@ namespace CSGOStats.Infrastructure.Core.Initialization
             return this;
         }
 
-        public StartupBuilder UsesPostgres()
+        public StartupBuilder UsesPostgres<TContext>(Func<PostgreConnectionSettings, PostgreConnectionSettings> postgresConnectionSettingModifier = null)
+            where TContext : BaseDataContext
         {
-            _serviceCollection.AddDataAccessConfiguration(_configuration, usesMongo: false);
+            _serviceCollection
+                .AddDataAccessConfiguration(_configuration, usesPostgres: true, postgresConnectionSettingModifier: postgresConnectionSettingModifier)
+                .RegisterPostgresContext<TContext>();
             return this;
         }
 
-        public StartupBuilder UsesMongo()
+        public StartupBuilder UsesMongo<TContext>(Func<MongoDbConnectionSetting, MongoDbConnectionSetting> mongoConnectionSettingModifier = null)
+            where TContext : BaseMongoContext
         {
-            _serviceCollection.AddDataAccessConfiguration(_configuration, usesPostgres: false);
+            _serviceCollection
+                .AddDataAccessConfiguration(_configuration, usesMongo: true, mongoConnectionSettingModifier: mongoConnectionSettingModifier)
+                .RegisterMongoContext<TContext>();
             return this;
         }
 
@@ -58,14 +69,14 @@ namespace CSGOStats.Infrastructure.Core.Initialization
             return this;
         }
 
-        public Task RunAsync(
-            Func<IServiceProvider, Task> actionBeforeStart = null,
-            Func<IServiceProvider, Task> actionBeforeFinish = null) =>
-                new Runtime(
-                    _serviceCollection.BuildServiceProvider(),
-                    _configuration,
-                    actionBeforeStart,
-                    actionBeforeFinish).RunAsync();
+        public Task RunAsync(IRuntimeAction action) =>
+            new Runtime(_serviceCollection.BuildServiceProvider(), _configuration).RunAsync(action);
+
+        private void SetupServices()
+        {
+            _serviceCollection.AddScoped<ExecutionContext>();
+            EnableLogging();
+        }
 
         private void EnableLogging() =>
             _serviceCollection.AddLogging(builder =>

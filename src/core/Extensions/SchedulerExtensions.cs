@@ -40,5 +40,11 @@ namespace CSGOStats.Infrastructure.Core.Extensions
                 .Create()
                 .WithSchedule(CronScheduleBuilder.CronSchedule(cronExpression))
                 .Build();
+
+        public static ITrigger CreateScheduledTrigger(this IScheduleBuilder scheduleBuilder) =>
+            TriggerBuilder
+                .Create()
+                .WithSchedule(scheduleBuilder)
+                .Build();
     }
 }

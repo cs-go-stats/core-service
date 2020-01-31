@@ -1,6 +1,6 @@
 category=infrastructure
 service=core
-version=0.2.0
+version=0.2.0-alpha-7
 
 cd ./../../automation_scripts
 

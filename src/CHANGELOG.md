@@ -1,8 +1,12 @@
 # v0.2.0
 ## Added
 * Code from Infrastructure.DataAccess, Infrastructure.Messaging and Infrastructure.PageParse packages.
+* Code from Extensions.Extensions and Extensions.Validation packages.
+* `OffsetDateTime?` support for Entity Framework.
+* Throttling mechanism.
 ## Changed
 * Ordered code in correct namespaces.
+* Covered with tests the main amount of code.
 
 # v0.1.4
 # v0.1.3

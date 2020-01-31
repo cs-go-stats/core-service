@@ -8,5 +8,8 @@ namespace CSGOStats.Infrastructure.Core.Extensions
     {
         public static PropertyBuilder<OffsetDateTime> OffsetDateTime(this PropertyBuilder<OffsetDateTime> x) =>
             x.HasConversion(new OffsetDateTimeConverter());
+
+        public static PropertyBuilder<OffsetDateTime?> OffsetDateTime(this PropertyBuilder<OffsetDateTime?> x) =>
+            x.HasConversion(new NullableOffsetDateTimeConverter());
     }
 }

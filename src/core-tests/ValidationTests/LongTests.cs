@@ -62,7 +62,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.ValidationTests
             }
 
             {
-                var value = GenerateValue();
+                var value = GenerateValue(higherBound: 99);
                 var exception = Record.Exception(() => value.GreaterThanOrEqual(100, nameof(value))).Should().BeOfType<PreconditionFailed>().Subject;
                 exception.PreconditionCode.Should().Be(PreconditionCodes.GreaterThanOrEqual);
             }
