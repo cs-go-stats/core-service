@@ -8,6 +8,7 @@ using CSGOStats.Infrastructure.Core.Tests.MessagingTests.State;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using Xunit;
 
 namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
@@ -20,7 +21,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
         }
 
         [Fact]
-        public async Task PublishSubscribeTestAsync()
+        public async Task PublishSubscribeTest()
         {
             Fixture.StartupBuilder.WithMessaging<CoreTestFixture>();
 
@@ -28,8 +29,8 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
 
             await Fixture.RunAsync(
                 new ActionsAggregator(
-                    new RegisterMessageHandlerForTypesAction(typeof(TestMessage)),
-                    new FunctorAction((services, _) => PublishSubscribeTest(services, message))));
+                    new InitializeMessagingAction(typeof(TestMessage)),
+                    new FunctorAction((services, _) => PublishSubscribeTestAsync(services, message))));
 
             await Task.Delay(TimeSpan.FromSeconds(.5));
 
@@ -39,24 +40,44 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
             SharedData.Message.Data.Time.Should().Be(message.Data.Time);
         }
 
+        private static Task PublishSubscribeTestAsync(IServiceProvider serviceProvider, TestMessage message) =>
+            serviceProvider.GetService<IEventBus>().PublishAsync(message);
+
         [Fact]
-        public Task AutopurgeQueueTestAsync()
+        public Task AutopurgeQueueTest()
         {
             Fixture.StartupBuilder.WithMessaging<CoreTestFixture>();
 
             return Fixture.RunAsync(
                 new ActionsAggregator(
-                    new RegisterMessageHandlerForTypesAction(typeof(TestMessage)),
-                    new FunctorAction(AutopurgeQueueTest)));
+                    new InitializeMessagingAction(typeof(TestMessage)),
+                    new FunctorAction(AutopurgeQueueTestAsync)));
         }
 
-        private static Task PublishSubscribeTest(IServiceProvider serviceProvider, TestMessage message) =>
-            serviceProvider.GetService<IEventBus>().PublishAsync(message);
-
-        private static Task AutopurgeQueueTest(IServiceProvider serviceProvider, IConfigurationRoot _)
+        private static Task AutopurgeQueueTestAsync(IServiceProvider serviceProvider, IConfigurationRoot _)
         {
             var bus = serviceProvider.GetService<IEventBus>();
             return Task.WhenAll(Enumerable.Repeat(0, 10).Select(_ => bus.PublishAsync(MessageBuilder.GenerateRandomMessage())));
         }
+
+        [Fact]
+        public async Task DelayMessageTest()
+        {
+            Fixture.StartupBuilder.WithMessaging<CoreTestFixture>();
+
+            var message = MessageBuilder.GenerateForDelay();
+
+            await Fixture.RunAsync(
+                new ActionsAggregator(
+                    new InitializeMessagingAction(typeof(DelayedMessage)),
+                    new FunctorAction((serviceProvider, _) => DelayMessageTestAsync(serviceProvider, message))));
+
+            await Task.Delay(TimeSpan.FromSeconds(.5));
+
+            SharedData.DelayedMessage.Id.Should().Be(message.Id);
+        }
+
+        private static Task DelayMessageTestAsync(IServiceProvider serviceProvider, DelayedMessage message) =>
+            serviceProvider.GetService<IEventBus>().ScheduleAsync(Duration.FromSeconds(.25D), message);
     }
 }

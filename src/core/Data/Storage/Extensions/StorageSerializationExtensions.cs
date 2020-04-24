@@ -2,7 +2,7 @@
 using NodaTime;
 using NodaTime.Text;
 
-namespace CSGOStats.Infrastructure.Core.Extensions
+namespace CSGOStats.Infrastructure.Core.Data.Storage.Extensions
 {
     public static class SerializationExtensions
     {

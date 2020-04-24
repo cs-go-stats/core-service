@@ -18,20 +18,28 @@ namespace CSGOStats.Infrastructure.Core.Data.Storage
             _factory = factory.NotNull(nameof(factory));
         }
 
-        public virtual async Task<TEntity> Async(TKey key, Action<TEntity> updater)
+        public Task<TEntity> Async(TKey key, Action<TEntity> updater) => RunAsync(key, entity =>
+        {
+            updater(entity);
+            return Task.CompletedTask;
+        });
+
+        public Task<TEntity> Async(TKey key, Func<TEntity, Task> updaterAsync) => RunAsync(key, updaterAsync);
+
+        private async Task<TEntity> RunAsync(TKey key, Func<TEntity, Task> updaterAsync)
         {
             var entity = await _repository.FindAsync(key);
             if (entity == null)
             {
                 entity = _factory.CreateEmpty(key);
-                updater(entity);
+                await updaterAsync(entity);
 
                 await _repository.AddAsync(key, entity);
 
                 return entity;
             }
 
-            updater(entity);
+            await updaterAsync(entity);
 
             await _repository.UpdateAsync(key, entity);
 

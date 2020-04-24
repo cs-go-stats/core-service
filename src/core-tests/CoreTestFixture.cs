@@ -44,7 +44,7 @@ namespace CSGOStats.Infrastructure.Core.Tests
 
         public Task RunAsync(IRuntimeAction action) => StartupBuilder.RunAsync(
             new ActionsAggregator(
-                new CreateRelationalDatabaseAction(),
+                new InitializeRelationalDatabaseAction(),
                 action,
                 new DropRelationalDatabaseAction(),
                 new DropMongoDatabaseAction()));

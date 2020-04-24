@@ -1,4 +1,4 @@
-﻿using CSGOStats.Infrastructure.Core.Extensions;
+﻿using CSGOStats.Infrastructure.Core.Data.Storage.Extensions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NodaTime;
 

@@ -10,7 +10,7 @@ namespace CSGOStats.Infrastructure.Core.Extensions
 {
     public static class CommunicationServiceExtensions
     {
-        public static IServiceCollection AddMessaging(this IServiceCollection services, IConfigurationRoot configuration) =>
+        internal static IServiceCollection AddMessaging(this IServiceCollection services, IConfigurationRoot configuration) =>
             services
                 .RegisterPipeline()
                 .RegisterBus(configuration)
@@ -19,7 +19,7 @@ namespace CSGOStats.Infrastructure.Core.Extensions
                     configurationSection => new RetrySetting(
                         retryCount: configurationSection["RetryCount"].Int())));
 
-        public static IServiceCollection AddHandlers<TAssembly>(this IServiceCollection services) =>
+        internal static IServiceCollection AddHandlers<TAssembly>(this IServiceCollection services) =>
             services.Scan(selector =>
                 selector.FromAssemblyOf<TAssembly>()
                     .AddClasses(classes => classes.AssignableTo(typeof(BaseMessageHandler<>)))
@@ -33,7 +33,7 @@ namespace CSGOStats.Infrastructure.Core.Extensions
 
         private static IServiceCollection RegisterBus(this IServiceCollection services, IConfigurationRoot configuration) =>
             services
-                .AddScoped<IEventBus, RabbitMqEventBus>()
+                .AddScoped<IEventBus, MassTransitEventBus>()
                 .AddScoped<IMessageRegistrar, RabbitMqEventBus>()
                 .AddScoped(provider => new RabbitMqEventBus(
                     configuration: provider.GetService<RabbitMqConnectionConfiguration>(),

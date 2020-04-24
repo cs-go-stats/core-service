@@ -12,6 +12,8 @@ namespace CSGOStats.Infrastructure.Core.Tests.DataAccessTests.Infrastructure.Mod
 
         public OffsetDateTime Date { get; private set; }
 
+        public TestEntity() { /* EF */ }
+
         public TestEntity(Guid id, OffsetDateTime date)
         {
             Id = id;

@@ -9,7 +9,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.DataAccessTests.Infrastructure.Mod
         public void Configure(EntityTypeBuilder<TestEntity> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Date).IsRequired().OffsetDateTime();
+            builder.Property(x => x.Date).OffsetDateTime();
         }
     }
 }

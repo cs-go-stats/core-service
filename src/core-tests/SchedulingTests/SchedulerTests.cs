@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CSGOStats.Infrastructure.Core.Extensions;
 using CSGOStats.Infrastructure.Core.Initialization.RT.Actions;
+using CSGOStats.Infrastructure.Core.Scheduling.Extensions;
 using CSGOStats.Infrastructure.Core.Tests.SchedulingTests.Jobs;
 using CSGOStats.Infrastructure.Core.Tests.SchedulingTests.State;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
 using Quartz;
 using Xunit;
 
@@ -29,14 +28,12 @@ namespace CSGOStats.Infrastructure.Core.Tests.SchedulingTests
 
             await Fixture.RunAsync(new ActionsAggregator(
                 new ExecuteJobsAction(),
-                new FunctorAction((_, __) => SchedulerTestAction(_, __, initialCounterState))));
-        }
-
-        private static async Task SchedulerTestAction(IServiceProvider _, IConfigurationRoot __, int initialCounterValue)
-        {
-            await Task.Delay(TimeSpan.FromSeconds(1.1));
-            SharedState.Instance.Counter.Should().BeGreaterThan(initialCounterValue);
-            SharedState.Instance.Counter.Should().Be(initialCounterValue + 1);
+                new FunctorAction(async (_, __) =>
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(1.1));
+                    SharedState.Instance.Counter.Should().BeGreaterThan(initialCounterState);
+                    SharedState.Instance.Counter.Should().Be(initialCounterState + 1);
+                })));
         }
     }
 }

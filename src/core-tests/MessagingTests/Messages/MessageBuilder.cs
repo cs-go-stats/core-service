@@ -14,5 +14,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests.Messages
         public static TestData GenerateRandomData() => new TestData(
             date: DateTime.UtcNow,
             time: TimeSpan.FromMilliseconds(Random.NextDouble() * Random.Next()));
+
+        public static DelayedMessage GenerateForDelay() => new DelayedMessage(id: Guid.NewGuid());
     }
 }
