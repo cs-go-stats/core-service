@@ -20,7 +20,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.SchedulingTests
         [Fact]
         public async Task SchedulerSimpleTest()
         {
-            await Fixture.StartupBuilder.WithJobsAsync((scheduler, services, _) => scheduler.ScheduleJob(
+            Fixture.StartupBuilder.WithJobs((scheduler, services, _) => scheduler.ScheduleJob(
                 services.CreateJobTemplate<TestJob>(),
                 SimpleScheduleBuilder.RepeatSecondlyForTotalCount(1).CreateScheduledTrigger()));
 

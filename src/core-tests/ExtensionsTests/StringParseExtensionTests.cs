@@ -103,7 +103,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.ExtensionsTests
                 var minute = Random.Next(60);
                 var second = Random.Next(60);
                 var millisecond = Random.Next(1000);
-                var value = $"{day}.{hour}:{minute}:{second}.{millisecond}";
+                var value = $"{day:0}.{hour:00}:{minute:00}:{second:00}.{millisecond:000}";
                 var parsed = value.Timespan();
                 parsed.Should().Be(new TimeSpan(day, hour, minute, second, millisecond));
             }

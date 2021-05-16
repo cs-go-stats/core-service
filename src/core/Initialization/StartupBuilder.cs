@@ -54,9 +54,9 @@ namespace CSGOStats.Infrastructure.Core.Initialization
             return this;
         }
 
-        public async Task<StartupBuilder> WithJobsAsync(Func<IScheduler, IServiceProvider, IConfigurationRoot, Task> setup)
+        public StartupBuilder WithJobs(Func<IScheduler, IServiceProvider, IConfigurationRoot, Task> setup)
         {
-            var scheduler = await new StdSchedulerFactory().GetScheduler();
+            var scheduler = new StdSchedulerFactory().GetScheduler().Result;
             _serviceCollection.AddSingleton(scheduler);
             _serviceCollection.AddSingleton(setup);
 

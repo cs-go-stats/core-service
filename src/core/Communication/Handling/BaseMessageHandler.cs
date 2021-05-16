@@ -6,7 +6,7 @@ using CSGOStats.Infrastructure.Core.Extensions;
 
 namespace CSGOStats.Infrastructure.Core.Communication.Handling
 {
-    public abstract class BaseMessageHandler<T> : IMessageHandler
+    public abstract class BaseMessageHandler<T> : IMessageHandler<T>
         where T : class, IMessage
     {
         protected ExecutionContext Context { get; }

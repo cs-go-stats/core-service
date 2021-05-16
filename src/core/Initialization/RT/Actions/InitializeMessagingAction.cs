@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CSGOStats.Infrastructure.Core.Communication.Handling;
+using CSGOStats.Infrastructure.Core.Communication.Handling.Initialization;
 using CSGOStats.Infrastructure.Core.Communication.Transport;
+using CSGOStats.Infrastructure.Core.Validation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,52 +10,37 @@ namespace CSGOStats.Infrastructure.Core.Initialization.RT.Actions
 {
     public class InitializeMessagingAction : ActionsAggregator
     {
-        public InitializeMessagingAction(params Type[] messageTypes)
+        public InitializeMessagingAction(Action<BaseBusActivationHandler> registrationAction)
             : base(
-                new RegisterMessageHandlerForTypesAction(messageTypes),
-                new StopMessagingBusAction(),
-                new StartHandlingMessagesAction())
+                new RegisterMessagesHandlersAction(registrationAction), 
+                new ListenToEventsAction())
         {
         }
     }
 
-    internal class StopMessagingBusAction : IRuntimeAction
+    public class RegisterMessagesHandlersAction : IRuntimeAction
     {
-        public Task ActAsync(IServiceProvider serviceProvider, IConfigurationRoot configuration) => Task.CompletedTask;
+        private readonly Action<BaseBusActivationHandler> _registrationAction;
 
-        public Task StopAsync(IServiceProvider serviceProvider) =>
-            serviceProvider.GetService<IEventBus>().StopAsync();
-    }
-
-    internal class StartHandlingMessagesAction : IRuntimeAction
-    {
-        public Task ActAsync(IServiceProvider serviceProvider, IConfigurationRoot _) => 
-            serviceProvider.GetService<IEventBus>().StartAsync();
-
-        public Task StopAsync(IServiceProvider serviceProvider) => Task.CompletedTask;
-    }
-
-    internal class RegisterMessageHandlerForTypesAction : IRuntimeAction
-    {
-        private readonly Type[] _types;
-
-        public RegisterMessageHandlerForTypesAction(params Type[] types)
+        public RegisterMessagesHandlersAction(Action<BaseBusActivationHandler> registrationAction)
         {
-            _types = types;
+            _registrationAction = registrationAction.NotNull(nameof(registrationAction));
         }
 
-        public Task ActAsync(IServiceProvider serviceProvider, IConfigurationRoot _)
+        public Task ActAsync(IServiceProvider serviceProvider, IConfigurationRoot configuration)
         {
-            var registrar = serviceProvider.GetService<IMessageRegistrar>();
-
-            foreach (var type in _types)
-            {
-                registrar.RegisterForType(type);
-            }
-
+            _registrationAction(serviceProvider.GetService<BaseBusActivationHandler>());
             return Task.CompletedTask;
         }
 
         public Task StopAsync(IServiceProvider _) => Task.CompletedTask;
+    }
+
+    public class ListenToEventsAction : IRuntimeAction
+    {
+        public Task ActAsync(IServiceProvider serviceProvider, IConfigurationRoot configuration) =>
+            serviceProvider.GetService<IEventBus>().StartAsync(serviceProvider.GetService<BaseBusActivationHandler>());
+
+        public Task StopAsync(IServiceProvider serviceProvider) => serviceProvider.GetService<IEventBus>().StopAsync();
     }
 }

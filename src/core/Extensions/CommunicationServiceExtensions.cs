@@ -1,5 +1,6 @@
 ﻿using CSGOStats.Infrastructure.Core.Communication.Config;
 using CSGOStats.Infrastructure.Core.Communication.Handling;
+using CSGOStats.Infrastructure.Core.Communication.Handling.Initialization;
 using CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline;
 using CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline.StandardPipes;
 using CSGOStats.Infrastructure.Core.Communication.Transport;
@@ -19,12 +20,17 @@ namespace CSGOStats.Infrastructure.Core.Extensions
                     configurationSection => new RetrySetting(
                         retryCount: configurationSection["RetryCount"].Int())));
 
-        internal static IServiceCollection AddHandlers<TAssembly>(this IServiceCollection services) =>
-            services.Scan(selector =>
+        internal static IServiceCollection AddHandlers<TAssembly>(this IServiceCollection services) => services
+            .Scan(selector =>
                 selector.FromAssemblyOf<TAssembly>()
                     .AddClasses(classes => classes.AssignableTo(typeof(BaseMessageHandler<>)))
                     .As<IHandler>()
-                    .WithTransientLifetime());
+                    .WithTransientLifetime())
+            .Scan(selector =>
+                selector.FromAssemblyOf<TAssembly>()
+                    .AddClasses(classes => classes.AssignableTo(typeof(BaseBusActivationHandler)))
+                    .As<BaseBusActivationHandler>()
+                    .WithSingletonLifetime());
 
         private static IServiceCollection RegisterPipeline(this IServiceCollection services) =>
             services
@@ -34,10 +40,6 @@ namespace CSGOStats.Infrastructure.Core.Extensions
         private static IServiceCollection RegisterBus(this IServiceCollection services, IConfigurationRoot configuration) =>
             services
                 .AddScoped<IEventBus, MassTransitEventBus>()
-                .AddScoped<IMessageRegistrar, RabbitMqEventBus>()
-                .AddScoped(provider => new RabbitMqEventBus(
-                    configuration: provider.GetService<RabbitMqConnectionConfiguration>(),
-                    serviceProvider: provider))
                 .ConfigureRabbitMqConnectionSetting(configuration);
 
         private static IServiceCollection ConfigureRabbitMqConnectionSetting(

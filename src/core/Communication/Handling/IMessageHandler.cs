@@ -13,4 +13,8 @@ namespace CSGOStats.Infrastructure.Core.Communication.Handling
 
         Task HandleAsync(object message);
     }
+
+    public interface IMessageHandler<T> : IMessageHandler
+    {
+    }
 }

@@ -29,7 +29,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
 
             await Fixture.RunAsync(
                 new ActionsAggregator(
-                    new InitializeMessagingAction(typeof(TestMessage)),
+                    new InitializeMessagingAction(x => x.RegisterHandler<DelayedMessage>()),
                     new FunctorAction((services, _) => PublishSubscribeTestAsync(services, message))));
 
             await Task.Delay(TimeSpan.FromSeconds(.5));
@@ -50,7 +50,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
 
             return Fixture.RunAsync(
                 new ActionsAggregator(
-                    new InitializeMessagingAction(typeof(TestMessage)),
+                    new InitializeMessagingAction(x => x.RegisterHandler<TestMessage>()),
                     new FunctorAction(AutopurgeQueueTestAsync)));
         }
 
@@ -69,7 +69,7 @@ namespace CSGOStats.Infrastructure.Core.Tests.MessagingTests
 
             await Fixture.RunAsync(
                 new ActionsAggregator(
-                    new InitializeMessagingAction(typeof(DelayedMessage)),
+                    new InitializeMessagingAction(x => x.RegisterHandler<DelayedMessage>()),
                     new FunctorAction((serviceProvider, _) => DelayMessageTestAsync(serviceProvider, message))));
 
             await Task.Delay(TimeSpan.FromSeconds(.5));
