@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF;
-using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo;
+using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF.Setup;
+using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo.Setup;
 using CSGOStats.Infrastructure.Core.Extensions;
 using CSGOStats.Infrastructure.Core.Initialization;
 using CSGOStats.Infrastructure.Core.Initialization.RT.Actions;
@@ -27,18 +27,8 @@ namespace CSGOStats.Infrastructure.Core.Tests
         {
             StartupBuilder = Startup
                 .ForEnvironment(ServiceName, Environments.Staging)
-                .UsesPostgres<TestEfContext>(x => new PostgreConnectionSettings(
-                    host: x.Host,
-                    database: x.Database.UseTestDatabaseName(),
-                    username: x.Username,
-                    password: x.Password,
-                    isAuditEnabled: x.IsAuditEnabled))
-                .UsesMongo<TestMongoContext>(x => new MongoDbConnectionSetting(
-                    host: x.Host,
-                    port: x.Port,
-                    username: x.Username,
-                    password: x.Password,
-                    database: x.Database.UseTestDatabaseName()))
+                .UsesPostgres<TestEfContext>(PostgresSettingsConfiguration.UseWithModification(x => x.ModifyDatabase(d => d.UseTestDatabaseName())))
+                .UsesMongo<TestMongoContext>(MongoSettingsConfiguration.UseWithModification(x => x.ModifyDatabase(d => d.UseTestDatabaseName())))
                 .ConfigureServices(ConfigureServices);
         }
 

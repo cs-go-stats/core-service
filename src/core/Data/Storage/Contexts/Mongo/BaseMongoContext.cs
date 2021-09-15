@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo
@@ -12,17 +11,11 @@ namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo
 
         public IClientSessionHandle SessionHandle { get; private set; }
 
-        static BaseMongoContext()
-        {
-            BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
-        }
-
         public BaseMongoContext(MongoDbConnectionSetting connectionSetting)
         {
             Client = new MongoClient(connectionSetting.CreateConnectionString());
             Database = Client.GetDatabase(
-                name: connectionSetting.Database,
-                settings: new MongoDatabaseSettings { GuidRepresentation = GuidRepresentation.Standard });
+                name: connectionSetting.Database);
         }
 
         public virtual void Dispose() => SessionHandle?.Dispose();

@@ -2,25 +2,27 @@
 using CSGOStats.Infrastructure.Core.Extensions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace CSGOStats.Infrastructure.Core.Data.Storage.Serialization
 {
-    public class GuidMongoSerializer : IBsonSerializer
+    public class GuidMongoSerializer : GuidSerializer
     {
+        internal const GuidRepresentation DefaultGuidRepresentation = GuidRepresentation.Standard;
+        
         public static IBsonSerializer Instance { get; } = new GuidMongoSerializer();
 
-        public Type ValueType => typeof(Guid);
-
         private GuidMongoSerializer()
+            : base(DefaultGuidRepresentation)
         {
         }
 
-        public object Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) =>
+        public override Guid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args) =>
             context.Reader.ReadBinaryData().AsGuid;
 
-        public void Serialize(BsonSerializationContext context, BsonSerializationArgs args, object value)
+        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Guid value)
         {
-            var data = new BsonBinaryData(value.OfType<Guid>(), GuidRepresentation.Standard);
+            var data = new BsonBinaryData(value.OfType<Guid>(), DefaultGuidRepresentation);
             context.Writer.WriteBinaryData(data);
         }
     }

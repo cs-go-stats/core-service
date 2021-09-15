@@ -1,8 +1,9 @@
-﻿using CSGOStats.Infrastructure.Core.Validation;
+﻿using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Setup;
+using CSGOStats.Infrastructure.Core.Validation;
 
 namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo
 {
-    public class MongoDbConnectionSetting
+    public class MongoDbConnectionSetting : IStorageSetting
     {
         public string Host { get; }
 

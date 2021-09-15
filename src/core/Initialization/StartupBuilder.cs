@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CSGOStats.Infrastructure.Core.Context;
 using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF;
 using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo;
+using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Setup;
 using CSGOStats.Infrastructure.Core.Extensions;
 using CSGOStats.Infrastructure.Core.Initialization.RT;
 using CSGOStats.Infrastructure.Core.Initialization.RT.Actions;
@@ -35,21 +36,21 @@ namespace CSGOStats.Infrastructure.Core.Initialization
             _serviceCollection.AddMessaging(_configuration).AddHandlers<TStartup>();
             return this;
         }
-
-        public StartupBuilder UsesPostgres<TContext>(Func<PostgreConnectionSettings, PostgreConnectionSettings> postgresConnectionSettingModifier = null)
+        
+        public StartupBuilder UsesPostgres<TContext>(StorageSettingsConfiguration<PostgreConnectionSettings> postgresConfiguration)
             where TContext : BaseDataContext
         {
             _serviceCollection
-                .AddDataAccessConfiguration(_configuration, usesPostgres: true, postgresConnectionSettingModifier: postgresConnectionSettingModifier)
+                .AddDataAccessConfiguration(_configuration, postgresConfiguration, StorageSettingsConfiguration<MongoDbConnectionSetting>.NoUse())
                 .RegisterPostgresContext<TContext>();
             return this;
         }
 
-        public StartupBuilder UsesMongo<TContext>(Func<MongoDbConnectionSetting, MongoDbConnectionSetting> mongoConnectionSettingModifier = null)
+        public StartupBuilder UsesMongo<TContext>(StorageSettingsConfiguration<MongoDbConnectionSetting> mongoConfiguration)
             where TContext : BaseMongoContext
         {
             _serviceCollection
-                .AddDataAccessConfiguration(_configuration, usesMongo: true, mongoConnectionSettingModifier: mongoConnectionSettingModifier)
+                .AddDataAccessConfiguration(_configuration, StorageSettingsConfiguration<PostgreConnectionSettings>.NoUse(), mongoConfiguration)
                 .RegisterMongoContext<TContext>();
             return this;
         }

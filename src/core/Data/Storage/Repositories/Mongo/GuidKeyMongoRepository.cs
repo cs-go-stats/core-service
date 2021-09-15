@@ -1,6 +1,7 @@
 ﻿using System;
 using CSGOStats.Infrastructure.Core.Data.Entities;
 using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Mongo;
+using CSGOStats.Infrastructure.Core.Data.Storage.Serialization;
 using MongoDB.Bson;
 
 namespace CSGOStats.Infrastructure.Core.Data.Storage.Repositories.Mongo
@@ -19,7 +20,7 @@ namespace CSGOStats.Infrastructure.Core.Data.Storage.Repositories.Mongo
             {
                 return new BsonDocument(
                     name: "Id",
-                    value: new BsonBinaryData(guid));
+                    value: new BsonBinaryData(guid, GuidMongoSerializer.DefaultGuidRepresentation));
             }
 
             return base.CreateIdFilterDefinition(id);

@@ -7,7 +7,7 @@ namespace CSGOStats.Infrastructure.Core.Extensions
     public static class ConfigurationExtensions
     {
         public static TSetting GetFromConfiguration<TSetting>(
-            this IConfigurationRoot configuration,
+            this IConfiguration configuration,
             string sectionName,
             Func<IConfiguration, TSetting> creatingFunctor)
             where TSetting : class

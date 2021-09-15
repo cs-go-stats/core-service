@@ -1,6 +1,8 @@
-﻿namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF
+﻿using CSGOStats.Infrastructure.Core.Data.Storage.Contexts.Setup;
+
+namespace CSGOStats.Infrastructure.Core.Data.Storage.Contexts.EF
 {
-    public class PostgreConnectionSettings
+    public class PostgreConnectionSettings : IStorageSetting
     {
         public string Host { get; }
 

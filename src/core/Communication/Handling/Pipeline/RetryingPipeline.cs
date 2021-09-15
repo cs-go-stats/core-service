@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSGOStats.Infrastructure.Core.Communication.Config;
 using CSGOStats.Infrastructure.Core.Validation;
+using Polly;
 
 namespace CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline
 {
@@ -16,26 +17,10 @@ namespace CSGOStats.Infrastructure.Core.Communication.Handling.Pipeline
             _retrySetting = retrySetting.NotNull(nameof(retrySetting));
         }
 
-        protected override async Task HandleAsync(IMessageHandler messageHandler, object rawMessage)
-        {
-            var exceptions = new Exception[_retrySetting.RetryCount];
-
-            for (var @try = 0; @try < _retrySetting.RetryCount; @try++)
-            {
-                try
-                {
-                    await TryHandleAsync(messageHandler, rawMessage);
-                    return;
-                }
-                catch (Exception e)
-                {
-                    exceptions[@try] = e;
-                    await Task.Delay(TimeSpan.FromSeconds(.1));
-                }
-            }
-
-            throw new AggregateException(exceptions);
-        }
+        protected override Task HandleAsync(IMessageHandler messageHandler, object rawMessage) => Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(_retrySetting.RetryCount, _ => TimeSpan.FromSeconds(.1))
+            .ExecuteAsync(() => TryHandleAsync(messageHandler, rawMessage));
 
         private static Task TryHandleAsync(IMessageHandler messageHandler, object rawMessage) =>
             messageHandler.HandleAsync(rawMessage);
