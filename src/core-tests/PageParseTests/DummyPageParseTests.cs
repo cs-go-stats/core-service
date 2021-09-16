@@ -27,11 +27,11 @@ namespace CSGOStats.Infrastructure.Core.Tests.PageParseTests
             
         private static async Task ParseHtmlTestAction(IServiceProvider serviceProvider, IConfigurationRoot _)
         {
-            var loader = serviceProvider.GetService<IContentLoader>();
-            var parser = serviceProvider.GetService<IPageParser<TestPageModel>>();
+            var loader = serviceProvider.GetRequiredService<IContentLoader>();
+            var parser = serviceProvider.GetRequiredService<IPageParser<TestPageModel>>();
             var result = await parser.ParseAsync(loader);
 
-            result.Header.Numbers.Should().BeEquivalentTo(1, 2, 3);
+            result.Header.Numbers.Should().BeEquivalentTo(new[] { 1, 2, 3 });
             result.Header.Texts.Should().BeEquivalentTo("one", "two", "three");
             result.Header.Span.Should().Be("test-span");
 
