@@ -1,0 +1,14 @@
+image: Visual Studio 2015
+
+before_build:
+- nuget restore
+- choco install opencover.portable
+- choco install codecov
+
+build:
+  project: .\src\core.sln
+  verbosity: minimal
+
+test_script:
+- OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:".\src\core\bin\net5.0\CSGOStats.Infrastructure.Core.dll.dll -noshadow" -filter:"+[core]*" -output:".\coverage.xml"
+- codecov -f "coverage.xml"
